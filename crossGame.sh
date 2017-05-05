@@ -1,73 +1,71 @@
 #!/bin/bash
 
-delcare -A matrix
+clear
 
 for ((i=1;i<=9;i++)) do
-        matrix[$i]="s"
+	matrix[$i]="."
 done
-
-for ((i=1;i<=9;i++)) do
-        echo -n "| ${matrix[$i]} |"
-        if ! ((${i} % 3)); then
-           echo
-        fi
-   done
 
 sym="X"
 
-for x in {0..10} 
+check () 
+{
+	if [ ${matrix[$1]} = ${matrix[$2]} ] && [ ${matrix[$2]} = ${matrix[$3]} ] && [ ${matrix[$1]} != "." ] && [ ${matrix[$2]} != "." ] && [ ${matrix[$3]} != "." ]; then
+		echo "Won player ${matrix[$1]}"
+		exit
+	fi
+}  
+
+draw ()
+{
+	for ((i=1;i<=9;i++)) do
+		echo -n "| ${matrix[$i]} |"
+		if ! ((${i} % 3)); then
+		   echo
+		fi
+	done
+	echo
+}
+
+checkForWrongMove ()
+{
+	clear
+	if [ ${matrix[${x}]} = "X"  ] || [ ${matrix[${x}]} = "O" ] || [ $x -gt 10 ] || [ $x -lt 0 ]; then
+		echo "Wrong move!"
+		echo
+		compare=1
+	else
+		compare=0
+	fi
+}
+
+while true
 do
-   read x
+	draw
+	
+	read x
 
-   #if [ ${matrix[${x}]} != "X"  ] && [ ${matrix[${x}]} != "O" ] && [ $x -lt 10 ] && [ $x -gt 0 ]  TODO***************************
-
-   matrix[${x}]=$sym
-
-   for ((i=1;i<=9;i++)) do
-        echo -n "| ${matrix[$i]} |"
-        if ! ((${i} % 3)); then
-           echo
-        fi
-   done
-   echo
+	checkForWrongMove
+	
+	if [ ${compare} -eq 1 ]; then
+		continue
+	fi
+	
+	matrix[${x}]=$sym
 
     if [ $sym = "X" ]; then
         sym="O"
     else
         sym="X"
     fi
-
-    if [ ${matrix[1]} = ${matrix[2]} ] && [ ${matrix[2]} = ${matrix[3]} ] && [ ${matrix[1]} != "s" ] && [ ${matrix[2]} != "s" ] && [ ${matrix[3]} != "s" ]; then
-        echo "Won ${matrix[1]}"
-        exit
-    fi
-
-    if [ ${matrix[4]} = ${matrix[5]} ] && [ ${matrix[5]} = ${matrix[6]} ] && [ ${matrix[4]} != "s" ] && [ ${matrix[5]} != "s" ] && [ ${matrix[6]} != "s" ]; then
-        echo "Won ${matrix[4]} player"
-    fi
-
-    if [ ${matrix[7]} = ${matrix[8]} ] && [ ${matrix[8]} = ${matrix[9]} ] && [ ${matrix[7]} != "s" ] && [ ${matrix[8]} != "s" ] && [ ${matrix[9]} != "s" ]; then
-        echo "Won ${matrix[7]} player"
-    fi
-
-    if [ ${matrix[1]} = ${matrix[5]} ] && [ ${matrix[5]} = ${matrix[9]} ] && [ ${matrix[1]} != "s" ] && [ ${matrix[5]} != "s" ] && [ ${matrix[9]} != "s" ]; then
-        echo "Won ${matrix[1]} player"
-    fi
-
-    if [ ${matrix[3]} = ${matrix[5]} ] && [ ${matrix[5]} = ${matrix[7]} ] && [ ${matrix[3]} != "s" ] && [ ${matrix[5]} != "s" ] && [ ${matrix[7]} != "s" ]; then
-        echo "Won ${matrix[3]} player"
-    fi
-
-    if [ ${matrix[1]} = ${matrix[4]} ] && [ ${matrix[4]} = ${matrix[7]} ] && [ ${matrix[1]} != "s" ] && [ ${matrix[4]} != "s" ] && [ ${matrix[7]} != "s" ]; then
-        echo "Won ${matrix[1]} player"
-    fi
-
-    if [ ${matrix[2]} = ${matrix[5]} ] && [ ${matrix[5]} = ${matrix[8]} ] && [ ${matrix[2]} != "s" ] && [ ${matrix[5]} != "s" ] && [ ${matrix[8]} != "s" ]; then
-        echo "Won ${matrix[2]} player"
-    fi
-
-    if [ ${matrix[3]} = ${matrix[6]} ] && [ ${matrix[6]} = ${matrix[9]} ] && [ ${matrix[3]} != "s" ] && [ ${matrix[6]} != "s" ] && [ ${matrix[9]} != "s" ]; then
-        echo "Won ${matrix[3]} player"
-    fi
+    
+	check 1 2 3
+	check 4 5 6
+	check 7 8 9
+	check 1 2 3
+	check 1 5 9
+	check 3 5 7
+	check 1 4 7
+	check 3 6 9
 
 done
